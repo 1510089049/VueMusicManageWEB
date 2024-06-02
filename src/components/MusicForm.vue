@@ -1,56 +1,87 @@
 <template>
+  <div ref="background" class="background-container">
     <v-form @submit.prevent="submit">
       <v-text-field v-model="title" label="音乐标题" required></v-text-field>
       <v-text-field v-model="artist" label="艺术家" required></v-text-field>
       <v-text-field v-model="url" label="音乐URL" required></v-text-field>
+      <v-text-field v-model="albumImage" label="专辑封面URL" required></v-text-field>
       <v-btn type="submit" color="primary">{{ editMode ? '保存' : '提交' }}</v-btn>
     </v-form>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      music: {
-        type: Object,
-        default: null
+  </div>
+</template>
+
+<script>
+export default {
+  mounted() {
+    this.initHaloEffect();
+  },
+  methods: {
+    initHaloEffect() {
+      const container = this.$refs.background;
+      const canvas = document.createElement('canvas');
+      container.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      const colors = ['#f58b42', '#d0ff00', '#4fec00']; // Halo colors
+      const numParticles = 150;
+      const particles = [];
+
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+
+      function Particle() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = Math.random() * 1 - 0.5;
+        this.vy = Math.random() * 1 - 0.5;
+        this.radius = Math.random() * 2 + 0.5;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
       }
-    },
-    data() {
-      return {
-        title: this.music ? this.music.title : '',
-        artist: this.music ? this.music.artist : '',
-        url: this.music ? this.music.url : '',
-        editMode: !!this.music
+
+      Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
       };
-    },
-    methods: {
-      submit() {
-        const newMusic = {
-          title: this.title,
-          artist: this.artist,
-          url: this.url
-        };
-        if (this.editMode) {
-          this.$emit('edit-music', newMusic);
-        } else {
-          this.$emit('add-music', newMusic);
+
+      Particle.prototype.update = function () {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+          this.vx = -this.vx;
         }
-        this.title = '';
-        this.artist = '';
-        this.url = '';
+
+        if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+          this.vy = -this.vy;
+        }
+
+        this.draw();
+      };
+
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(particle => {
+          particle.update();
+        });
       }
-    },
-    watch: {
-      music: {
-        handler(newMusic) {
-          this.title = newMusic ? newMusic.title : '';
-          this.artist = newMusic ? newMusic.artist : '';
-          this.url = newMusic ? newMusic.url : '';
-          this.editMode = !!newMusic;
-        },
-        deep: true
+
+      for (let i = 0; i < numParticles; i++) {
+        particles.push(new Particle());
       }
+
+      animate();
     }
-  };
-  </script>
-  
+  }
+};
+</script>
+
+<style>
+.background-container {
+  width: 100%;
+  height: 100vh;
+}
+</style>
