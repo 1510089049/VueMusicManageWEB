@@ -46,20 +46,20 @@ export default {
       musics: [
         {
           title: 'Lugu Lugu Kan-Ibi (Diligent Child)',
-          artist: 'Artist 1',
-          url: '../public/music/David Darling - Lugu Lugu Kan-Ibi (Diligent Child).mp3',
+          artist: 'DavidDarling',
+          url: '../music/LuguLuguKan.mp3',
           albumImage: '../images/example1.jpg'
         },
         {
           title: 'Sensitive',
           artist: '陳梦嘉',
-          url: '../music/MusicWeb/MusicRef/陳梦嘉 - Sensitive.mp3',
+          url: '../music/Sensitive.mp3',
           albumImage: '../images/example2.jpg'
         },
         {
           title: 'Just the Two of Us (Album Version)',
           artist: 'Grover Washington, Jr.,Withers,MacDonald',
-          url: '../music/MusicWeb/MusicRef/Grover Washington, Jr.,Withers,MacDonald - Just the Two of Us (Album Version).mp3',
+          url: '../music/JustTheTwoOfUs.mp3',
           albumImage: '../images/example3.jpg'
         }
       ],

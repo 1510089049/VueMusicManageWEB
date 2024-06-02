@@ -1,10 +1,10 @@
 <template>
   <div ref="background" class="background-container">
-    <v-form @submit.prevent="submit">
-      <v-text-field v-model="title" label="音乐标题" required></v-text-field>
-      <v-text-field v-model="artist" label="艺术家" required></v-text-field>
-      <v-text-field v-model="url" label="音乐URL" required></v-text-field>
-      <v-text-field v-model="albumImage" label="专辑封面URL" required></v-text-field>
+    <v-form @submit.prevent="submitForm">
+      <v-text-field v-model="formData.title" label="音乐标题" required></v-text-field>
+      <v-text-field v-model="formData.artist" label="艺术家" required></v-text-field>
+      <v-text-field v-model="formData.url" label="音乐URL" required></v-text-field>
+      <v-text-field v-model="formData.albumImage" label="专辑封面URL" required></v-text-field>
       <v-btn type="submit" color="primary">{{ editMode ? '保存' : '提交' }}</v-btn>
     </v-form>
   </div>
@@ -12,6 +12,17 @@
 
 <script>
 export default {
+  data() {
+    return {
+      formData: {
+        title: '',
+        artist: '',
+        url: '',
+        albumImage: ''
+      },
+      editMode: false
+    };
+  },
   mounted() {
     this.initHaloEffect();
   },
@@ -22,8 +33,8 @@ export default {
       container.appendChild(canvas);
 
       const ctx = canvas.getContext('2d');
-      const colors = ['#f58b42', '#d0ff00', '#4fec00']; // Halo colors
-      const numParticles = 150;
+      const colors = ['#6e00ff', '#6e00ff', '#6e00ff']; // Halo colors
+      const numParticles = 500;
       const particles = [];
 
       canvas.width = container.clientWidth;
@@ -34,7 +45,7 @@ export default {
         this.y = Math.random() * canvas.height;
         this.vx = Math.random() * 1 - 0.5;
         this.vy = Math.random() * 1 - 0.5;
-        this.radius = Math.random() * 2 + 0.5;
+        this.radius = Math.random() * 8 + 0.5;
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
 
@@ -74,6 +85,19 @@ export default {
       }
 
       animate();
+    },
+    submitForm() {
+      const formDataCopy = { ...this.formData }; // 创建 formData 的副本，避免直接修改数据
+      this.$emit('add-music', formDataCopy); // 触发自定义事件将数据传递给父组件
+      this.resetForm(); // 重置表单数据
+    },
+    resetForm() {
+      this.formData = {
+        title: '',
+        artist: '',
+        url: '',
+        albumImage: ''
+      };
     }
   }
 };
@@ -83,5 +107,6 @@ export default {
 .background-container {
   width: 100%;
   height: 100vh;
+  position: relative;
 }
 </style>
