@@ -1,21 +1,16 @@
 <template>
-  <v-app>
-    <v-main>
-      <Home />
-    </v-main>
-  </v-app>
+  <div id="app">
+    <!-- 使用路由视图来根据当前路由渲染对应的组件 -->
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-import Home from '@/views/Home.vue';
-
 export default {
-  components: {
-    Home
-  }
+  name: 'App',
 };
 </script>
 
 <style>
-@import '~vuetify/dist/vuetify.min.css';
+/* Your global styles here */
 </style>
