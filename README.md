@@ -1,24 +1,2 @@
-# music
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![image](https://github.com/1510089049/VueMusicManageWEB/assets/124924055/31c0c006-2096-4ebb-b613-811c0780b60b)
+项目架构
