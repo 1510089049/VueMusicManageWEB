@@ -1,38 +1,42 @@
 <template>
   <div class="container" :style="{ backgroundColor: isPlaying ? '#f0f0f0' : 'transparent' }">
-    <v-container v-if="selectedMusic">
-      <v-row>
-        <v-col>
-          <v-btn @click="handleBackClick">返回</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="6" class="album-container">
-          <img :src="encodeURL(selectedMusic.albumImage)" alt="专辑图片" class="rotating-album" @load="updateLyricsHeight" />
-        </v-col>
-        <v-col cols="6" class="lyrics-container" :style="{ height: lyricsHeight, overflowY: 'auto' }">
-          <pre>{{ selectedMusic.lyrics || '加载中...' }}</pre>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <audio :src="encodeURL(selectedMusic.url)" controls autoplay @play="handlePlay" @pause="handlePause"></audio>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container v-else>
-      <v-list dense>
-        <v-list-item v-for="(music, index) in musics" :key="index" @click="handleMusicClick(music)">
-          <v-list-item-avatar>
-            <img :src="encodeURL(music.albumImage)" alt="专辑图片" @load="updateLyricsHeight" />
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>{{ music.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ music.artist }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-container>
+    <transition name="fade">
+      <v-container v-if="selectedMusic">
+        <!-- 播放页面的内容 -->
+        <v-row>
+          <v-col>
+            <v-btn @click="handleBackClick">返回</v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6" class="album-container">
+            <img ref="albumImage" :src="encodeURL(selectedMusic.albumImage)" alt="专辑图片" class="rotating-album" @load="updateLyricsHeight" />
+          </v-col>
+          <v-col cols="6" class="lyrics-container" :style="{ height: lyricsHeight, overflowY: 'auto' }">
+            <pre>{{ lyricsContent }}</pre>
+            <div v-if="loadingLyrics" class="loading-spinner"></div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <audio :src="encodeURL(selectedMusic.url)" controls autoplay @play="handlePlay" @pause="handlePause"></audio>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container v-else>
+        <v-list dense>
+          <v-list-item v-for="(music, index) in musics" :key="index" @click="handleMusicClick(music)">
+            <v-list-item-avatar>
+              <img :src="encodeURL(music.albumImage)" alt="专辑图片" />
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{ music.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ music.artist }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-container>
+    </transition>
   </div>
 </template>
 
@@ -46,24 +50,26 @@ export default {
       selectedMusic: null,
       lyricsHeight: '400px',
       isPlaying: false,
-      loadedLyrics: {} // Track loaded lyrics for each song
+      loadingLyrics: false,
+      lyricsContent: ''
     };
   },
   methods: {
     handleMusicClick(music) {
       this.selectedMusic = music;
-      if (!this.loadedLyrics[music.title]) {
-        this.loadLyrics(music.title);
-      }
+      this.loadLyrics(music.title);
     },
     async loadLyrics(title) {
+      this.loadingLyrics = true;
       try {
         const response = await fetch(`../POM/${title}.txt`);
         const lyrics = await response.text();
-        this.$set(this.loadedLyrics, title, lyrics); // Use Vue.set to add new property to reactive object
+        this.lyricsContent = lyrics || '暂无歌词';
       } catch (error) {
         console.error('Failed to load lyrics:', error);
-        this.$set(this.loadedLyrics, title, '暂无歌词'); // Set a default message or handle the error
+        this.lyricsContent = '暂无歌词'; // Set a default message or handle the error
+      } finally {
+        this.loadingLyrics = false;
       }
     },
     handleBackClick() {
@@ -78,8 +84,8 @@ export default {
     encodeURL(url) {
       return encodeURIComponent(url).replace(/%2F/g, '/').replace(/%3A/g, ':');
     },
-    updateLyricsHeight(event) {
-      const imageHeight = event.target.clientHeight;
+    updateLyricsHeight() {
+      const imageHeight = this.$refs.albumImage.clientHeight;
       this.lyricsHeight = `${imageHeight}px`;
     }
   }
@@ -117,5 +123,33 @@ export default {
   padding: 20px;
   font-size: 1.2em;
   white-space: pre-wrap;
+}
+
+.loading-spinner {
+  background-color: transparent;
+  border: 4px solid #ccc;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
