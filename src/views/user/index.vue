@@ -1,7 +1,7 @@
 <template>
-    <div>
-        用户页
-    </div>
+    <el-table>
+        
+    </el-table>
 </template>
 
 
