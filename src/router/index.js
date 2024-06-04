@@ -31,10 +31,10 @@ const router = new Router({
         {path: '/music/album', component: () => import('@/views/music/Album.vue')},
         {path: '/music/musicList', component: () => import('@/views/music/Music.vue')},
         {path: '/advertising/launchAdvertising', component: () => import('@/views/advertisement/LaunchAdvertising.vue')},
-        {path: '/advertising/banner', component: () => import('@/views/advertisement/Banner.vue')}
+        {path: '/home', component: () => import('@/views/Home.vue')}
       ]
     },
-    {path: '/*', component: import('@/views/404.vue')}
+    {path: '/*', component: import('@/views/error.vue')}
   ]
 });
 
